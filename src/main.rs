@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    io::{self, Write},
-};
+use std::{collections::HashMap, io};
 
 use anyhow::Ok;
 use registry::{Data, Hive, Security};
@@ -16,17 +13,15 @@ fn main() {
 fn execute() -> anyhow::Result<()> {
     let ids = get_mouse_ids()?;
     let keys = get_keys(&ids)?;
-    for k in keys.iter() {
+    for (i, k) in keys.iter().enumerate() {
         let value = is_reversed(k)?;
         if value {
-            println!("方向：自然");
+            println!("\n[{i}] 方向：自然");
         } else {
-            println!("方向：默认");
+            println!("\n[{i}] 方向：默认");
         }
 
-        if !enter_yes()? {
-            println!("退出程序");
-        } else {
+        if enter_yes()? {
             reverse(k, value)?;
 
             let d = if value { "默认" } else { "自然" };
@@ -84,8 +79,7 @@ fn get_keys(ids: &[HashMap<String, Variant>]) -> anyhow::Result<Vec<String>> {
     for (i, h) in ids.iter().enumerate() {
         if let Some(val) = h.get("Description") {
             if let Variant::String(s) = val {
-                print!("[{i}] {} ", s);
-                io::stdout().flush()?;
+                println!("[{i}] {}", s);
             }
         }
         if let Some(val) = h.get("DeviceID") {
